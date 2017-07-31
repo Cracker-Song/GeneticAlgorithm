@@ -15,7 +15,7 @@ using namespace std;
 #define HEIGHT 200
 #define WIDTH 150
 #define COLOR_MAX 255
-#define NUMBER_OF_GENES 1
+#define NUMBER_OF_GENES 10
 #define NUMBER_OF_INDIVIDUALS 5
 #define OK 1
 #define ERROR 0
@@ -113,7 +113,7 @@ public:
 //    Individuals Evolve();
 protected:
     Individual father_[NUMBER_OF_INDIVIDUALS];
-    long add_up_fitness_[NUMBER_OF_INDIVIDUALS];
+    int add_up_fitness_[NUMBER_OF_INDIVIDUALS];
     Individual child_[NUMBER_OF_INDIVIDUALS];
     int target_[WIDTH][HEIGHT][3];
 };
@@ -168,18 +168,21 @@ int main(int argc, const char * argv[]) {
 //    //test.PrintGenes();
 //    test.OverLay();
 //    test.OutPut(output);
-//    printf("%lf\n", test.Adaptability(picture));
+//    printf("%ld\n", test.Adaptability(picture));
     
-    Individual i1, i2, i3;
-    i3 = i1 ^ i2;
-    i1.PrintGenes();
-    i1.Mutate();
-    i1.PrintGenes();
-    i2.PrintGenes();
-    i3.PrintGenes();
+//    Individual i1, i2, i3;
+//    i3 = i1 ^ i2;
+//    i1.PrintGenes();
+//    i1.Mutate();
+//    i1.PrintGenes();
+//    i2.PrintGenes();
+//    i3.PrintGenes();
 //    //test on class Individual
-//    Individuals test;
+    
 //    Individuals test = Individuals(picture);
+//    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+//        printf("%ld\n", test.GetFather(i).Adaptability(picture));
+//    }
 //    test.QuickSort(0, NUMBER_OF_INDIVIDUALS);
 //    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
 //        printf("%ld\n", test.GetFather(i).Adaptability(picture));
@@ -424,7 +427,7 @@ long Individual::Adaptability(int list[WIDTH][HEIGHT][3])
     //OverLay();
     if (fitness_ < 0) {
         long sum = 0;
-        int r, g, b;
+        long r, g, b;
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {
                 r = list[x][y][0] - picture_[x][y][0];
@@ -506,7 +509,7 @@ Status Individuals::QuickSort(int head, int tail)
         return OK;
     int i = head, j = tail;
     Individual tmp = father_[head];
-    long pivot = father_[head].Adaptability(target_);
+    int pivot = father_[head].Adaptability(target_);
     while (i < j) {
         while (i < j and father_[j].Adaptability(target_) >= pivot) j--;
         father_[i] = father_[j];
