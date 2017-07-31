@@ -95,9 +95,9 @@ public:
     long Adaptability(int list[WIDTH][HEIGHT][3]);
     friend Individual operator^(Individual i1, Individual i2);//crossover
 protected:
-    RandomTriangle genes[NUMBER_OF_GENES];
-    int picture[WIDTH][HEIGHT][3];
-    long fitness = -1;
+    RandomTriangle genes_[NUMBER_OF_GENES];
+    int picture_[WIDTH][HEIGHT][3];
+    long fitness_ = -1;
 };
 
 class Individuals
@@ -112,10 +112,10 @@ public:
 //    Individual Roulette();
 //    Individuals Evolve();
 protected:
-    Individual father[NUMBER_OF_INDIVIDUALS];
-    long add_up_fitness[NUMBER_OF_INDIVIDUALS];
-    Individual child[NUMBER_OF_INDIVIDUALS];
-    int target[WIDTH][HEIGHT][3];
+    Individual father_[NUMBER_OF_INDIVIDUALS];
+    long add_up_fitness_[NUMBER_OF_INDIVIDUALS];
+    Individual child_[NUMBER_OF_INDIVIDUALS];
+    int target_[WIDTH][HEIGHT][3];
 };
 
 int main(int argc, const char * argv[]) {
@@ -353,13 +353,13 @@ int RandomTriangle::GetBlue()
 Individual::Individual()
 {
     for (int i = 0; i < NUMBER_OF_GENES; i++) {
-        genes[i] = RandomTriangle();//initialize genes
+        genes_[i] = RandomTriangle();//initialize genes_
     }
 }
 
 Status Individual::SetGene(int i, RandomTriangle rt)
 {
-    genes[i] = rt;
+    genes_[i] = rt;
     return OK;
 }
 
@@ -369,18 +369,18 @@ Status Individual::OverLay()
         for (int y = 0; y < HEIGHT; y++) {
             int tmp = 0;
             for (int i = 0; i < NUMBER_OF_GENES; i++) {
-                if (genes[i].IsPointInTriangle(Vector2(x, y))) {
-                    picture[x][y][0] += genes[i].GetRed();
-                    picture[x][y][1] += genes[i].GetGreen();
-                    picture[x][y][2] += genes[i].GetBlue();
+                if (genes_[i].IsPointInTriangle(Vector2(x, y))) {
+                    picture_[x][y][0] += genes_[i].GetRed();
+                    picture_[x][y][1] += genes_[i].GetGreen();
+                    picture_[x][y][2] += genes_[i].GetBlue();
                     tmp++;
                 }
                 
             }
             if (tmp) {
-                picture[x][y][0] /= tmp;
-                picture[x][y][1] /= tmp;
-                picture[x][y][2] /= tmp;
+                picture_[x][y][0] /= tmp;
+                picture_[x][y][1] /= tmp;
+                picture_[x][y][2] /= tmp;
             }
             //printf("%d %d %d\n", picture[x][y][0], picture[x][y][1], picture[x][y][2]);
         }
@@ -393,9 +393,9 @@ int Individual::OutPut(int list[WIDTH][HEIGHT][3])
     for (int x = 0; x < WIDTH; x++) {
         for (int y = 0; y < HEIGHT; y++) {
             //printf("%d %d %d\n", picture[x][y][0], picture[x][y][1], picture[x][y][2]);
-            list[x][y][0] = picture[x][y][0];
-            list[x][y][1] = picture[x][y][1];
-            list[x][y][2] = picture[x][y][2];
+            list[x][y][0] = picture_[x][y][0];
+            list[x][y][1] = picture_[x][y][1];
+            list[x][y][2] = picture_[x][y][2];
         }
     }
     return OK;
@@ -404,8 +404,8 @@ int Individual::OutPut(int list[WIDTH][HEIGHT][3])
 Status Individual::PrintGenes()
 {
     for (int i = 0; i < NUMBER_OF_GENES; i++) {
-        genes[i].PrintTriangle();
-        printf("r = %d, g = %d, b = %d\n\n", genes[i].GetRed(), genes[i].GetGreen(), genes[i].GetBlue());
+        genes_[i].PrintTriangle();
+        printf("r = %d, g = %d, b = %d\n\n", genes_[i].GetRed(), genes_[i].GetGreen(), genes_[i].GetBlue());
     }
     return OK;
 }
@@ -414,7 +414,7 @@ Status Individual::Mutate()
 {
     for (int i = 0; i < MUTATION_RATE; i++) {
         int tmp = rand() % NUMBER_OF_GENES;
-        genes[tmp] = RandomTriangle();
+        genes_[tmp] = RandomTriangle();
     }
     return OK;
 }
@@ -422,21 +422,21 @@ Status Individual::Mutate()
 long Individual::Adaptability(int list[WIDTH][HEIGHT][3])
 {
     //OverLay();
-    if (fitness < 0) {
+    if (fitness_ < 0) {
         long sum = 0;
         int r, g, b;
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {
-                r = list[x][y][0] - picture[x][y][0];
-                g = list[x][y][1] - picture[x][y][1];
-                b = list[x][y][2] - picture[x][y][2];
+                r = list[x][y][0] - picture_[x][y][0];
+                g = list[x][y][1] - picture_[x][y][1];
+                b = list[x][y][2] - picture_[x][y][2];
                 sum += SumOfSquare(r, g, b);
             }
         }
-        fitness = (WIDTH * HEIGHT * SumOfSquare(COLOR_MAX, COLOR_MAX, COLOR_MAX) - sum);
+        fitness_ = (WIDTH * HEIGHT * SumOfSquare(COLOR_MAX, COLOR_MAX, COLOR_MAX) - sum);
     }
     //printf("%lf\n", sum);
-    return fitness;
+    return fitness_;
 }
 
 Individual operator^(Individual i1, Individual i2)
@@ -444,13 +444,13 @@ Individual operator^(Individual i1, Individual i2)
     Individual new_individual;
     for (int i = 0; i < NUMBER_OF_GENES; i++) {
         if (rand() % 2) {
-            //new_individual.genes[i] = i1.genes[i];
-            new_individual.SetGene(i, i1.genes[i]);
+            //new_individual.genes_[i] = i1.genes_[i];
+            new_individual.SetGene(i, i1.genes_[i]);
         }
         else
         {
-            //new_individual.genes[i] = i2.genes[i];
-            new_individual.SetGene(i, i2.genes[i]);
+            //new_individual.genes_[i] = i2.genes_[i];
+            new_individual.SetGene(i, i2.genes_[i]);
         }
     }
     return new_individual;
@@ -462,15 +462,15 @@ Individuals::Individuals(int list[WIDTH][HEIGHT][3])
 {
     for (int x = 0; x < WIDTH; x++) {
         for (int y = 0; y < HEIGHT; y++) {
-            target[x][y][0] = list[x][y][0];
-            target[x][y][1] = list[x][y][1];
-            target[x][y][2] = list[x][y][2];
+            target_[x][y][0] = list[x][y][0];
+            target_[x][y][1] = list[x][y][1];
+            target_[x][y][2] = list[x][y][2];
         }
     }
     for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
-        father[i] = Individual();
-        father[i].OverLay();
-        //fitness[i] = individuals[i].Adaptability(list);
+        father_[i] = Individual();
+        father_[i].OverLay();
+        //fitness_[i] = individuals[i].Adaptability(list);
     }
 }
 
@@ -478,26 +478,26 @@ Individuals::Individuals(Individual ancestors[NUMBER_OF_INDIVIDUALS], int list[W
 {
     for (int x = 0; x < WIDTH; x++) {
         for (int y = 0; y < HEIGHT; y++) {
-            target[x][y][0] = list[x][y][0];
-            target[x][y][1] = list[x][y][1];
-            target[x][y][2] = list[x][y][2];
+            target_[x][y][0] = list[x][y][0];
+            target_[x][y][1] = list[x][y][1];
+            target_[x][y][2] = list[x][y][2];
         }
     }
     for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
-        father[i] = ancestors[i];
-        father[i].OverLay();
-        //fitness[i] = individuals[i].Adaptability(list);
+        father_[i] = ancestors[i];
+        father_[i].OverLay();
+        //fitness_[i] = individuals[i].Adaptability(list);
     }
 }
 
 Individual Individuals::GetFather(int i)
 {
-    return father[i];
+    return father_[i];
 }
 
 Individual Individuals::GetChild(int i)
 {
-    return child[i];
+    return child_[i];
 }
 
 Status Individuals::QuickSort(int head, int tail)
@@ -505,15 +505,15 @@ Status Individuals::QuickSort(int head, int tail)
     if (head >= tail)
         return OK;
     int i = head, j = tail;
-    Individual tmp = father[head];
-    long pivot = father[head].Adaptability(target);
+    Individual tmp = father_[head];
+    long pivot = father_[head].Adaptability(target_);
     while (i < j) {
-        while (i < j and father[j].Adaptability(target) >= pivot) j--;
-        father[i] = father[j];
-        while (i < j and father[i].Adaptability(target) <= pivot) i++;
-        father[j] = father[i];
+        while (i < j and father_[j].Adaptability(target_) >= pivot) j--;
+        father_[i] = father_[j];
+        while (i < j and father_[i].Adaptability(target_) <= pivot) i++;
+        father_[j] = father_[i];
     }
-    father[i] = tmp;
+    father_[i] = tmp;
     
     QuickSort(head, i - 1);
     QuickSort(j + 1, tail);
