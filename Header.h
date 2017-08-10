@@ -12,12 +12,12 @@
 #define HEIGHT 200
 #define WIDTH 150
 #define COLOR_MAX 255
-#define NUMBER_OF_GENES 20
-#define NUMBER_OF_INDIVIDUALS 13
+#define NUMBER_OF_GENES 50
+#define NUMBER_OF_INDIVIDUALS 10
 #define OK 1
 #define ERROR 0
 #define MUTATION_RATE 1
-#define MAX_GENERATION 100
+#define MAX_GENERATION 10000
 
 //#define SUM_OF_SQUARE(a, b, c) (a * a + b * b + c * c)
 

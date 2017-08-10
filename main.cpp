@@ -158,6 +158,8 @@ int main(int argc, const char * argv[]) {
 //        printf("%lld\n", fitness[i]);
 //    }
 //    //test on Sort
+    if (!ListToFile("first.txt", output))
+        return ERROR;
     for (int i = 0; i < MAX_GENERATION; i++) {
         printf("%d   %lld\n", i, test->GetFather(0)->Adaptability(picture));
         test->Evolve();
