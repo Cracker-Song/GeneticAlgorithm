@@ -3,8 +3,6 @@
 //  genetic_algorithm
 //
 //  Created by Bayes on 25/07/2017.
-//
-//
 
 #include <iostream>
 #include <stdlib.h>
@@ -15,8 +13,8 @@ using namespace std;
 #define HEIGHT 200
 #define WIDTH 150
 #define COLOR_MAX 255
-#define NUMBER_OF_GENES 10
-#define NUMBER_OF_INDIVIDUALS 5
+#define NUMBER_OF_GENES 20
+#define NUMBER_OF_INDIVIDUALS 10
 #define OK 1
 #define ERROR 0
 #define MUTATION_RATE 1
@@ -26,7 +24,9 @@ using namespace std;
 
 typedef int Status;
 
-long SumOfSquare(long a, long b, long c);
+int RandomN(int N);
+long long Random(long long low, long long high);
+long long SumOfSquare(long long a, long long b, long long c);
 Status FileToList(char file_name[], int list[WIDTH][HEIGHT][3]);
 Status ListToFile(char file_name[], int list[WIDTH][HEIGHT][3]);
 
@@ -87,35 +87,42 @@ class Individual
 {
 public:
     Individual();
+    Individual(Individual const &i);
     Status SetGene(int i, RandomTriangle rt);
+    RandomTriangle *GetGenes();
     Status OverLay();
     Status OutPut(int list[WIDTH][HEIGHT][3]);
     Status PrintGenes();
     Status Mutate();//mutation
-    long Adaptability(int list[WIDTH][HEIGHT][3]);
+    long long Adaptability(int list[WIDTH][HEIGHT][3]);
     friend Individual operator^(Individual i1, Individual i2);//crossover
+    friend bool operator>=(Individual i1, Individual i2);
+    friend bool operator<=(Individual i1, Individual i2);
 protected:
     RandomTriangle genes_[NUMBER_OF_GENES];
     int picture_[WIDTH][HEIGHT][3];
-    long fitness_ = -1;
+    long long fitness_ = -1;
 };
 
 class Individuals
 {
 public:
     Individuals();
+    ~Individuals();
     Individuals(int list[WIDTH][HEIGHT][3]);
-    Individuals(Individual ancestors[NUMBER_OF_INDIVIDUALS], int list[WIDTH][HEIGHT][3]);
-    Individual GetFather(int i);
-    Individual GetChild(int i);
-    Status QuickSort(int head, int tail);
-//    Individual Roulette();
-//    Individuals Evolve();
+    Individuals(Individual *ancestors[NUMBER_OF_INDIVIDUALS], int list[WIDTH][HEIGHT][3]);
+    Individual *GetFather(int i);
+    long long *GetFitness();
+    Status PrintIndividual();
+    //Individual *GetChild(int i);
+    Status Sort();
+    Individual *Roulette();
+    Individuals *Evolve();
 protected:
-    Individual father_[NUMBER_OF_INDIVIDUALS];
-    int add_up_fitness_[NUMBER_OF_INDIVIDUALS];
-    Individual child_[NUMBER_OF_INDIVIDUALS];
-    int target_[WIDTH][HEIGHT][3];
+    Individual *fathers[NUMBER_OF_INDIVIDUALS] = {NULL};
+    Individual *children[NUMBER_OF_INDIVIDUALS] = {NULL};
+    long long add_up_fitness_[NUMBER_OF_INDIVIDUALS] = {0};
+    int target_[WIDTH][HEIGHT][3] = {0};
 };
 
 int main(int argc, const char * argv[]) {
@@ -159,7 +166,7 @@ int main(int argc, const char * argv[]) {
 //    //abc.l12_.PrintLine();
 //    //abc.l13_.PrintLine();
 //    //abc.l23_.PrintLine();
-//    Vector2 o = Vector2(25, 21);
+//    Vector2 o = Vector2(75, 100);
 //    printf("%d\n", abc.IsPointInTriangle(o));
 //    //test on class RandonTriangle
 
@@ -167,8 +174,8 @@ int main(int argc, const char * argv[]) {
 //    Individual test = Individual();
 //    //test.PrintGenes();
 //    test.OverLay();
-//    test.OutPut(output);
-//    printf("%ld\n", test.Adaptability(picture));
+//    //test.OutPut(output);
+//    printf("%lld\n", test.Adaptability(picture));
     
 //    Individual i1, i2, i3;
 //    i3 = i1 ^ i2;
@@ -179,16 +186,48 @@ int main(int argc, const char * argv[]) {
 //    i3.PrintGenes();
 //    //test on class Individual
     
-//    Individuals test = Individuals(picture);
+//    Individuals test = Individuals();
 //    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
-//        printf("%ld\n", test.GetFather(i).Adaptability(picture));
+//        printf("%lld\n", (test.GetFather(i))->Adaptability(picture));
 //    }
-//    test.QuickSort(0, NUMBER_OF_INDIVIDUALS);
+//    printf("\n");
+//    test.Sort();
 //    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
-//        printf("%ld\n", test.GetFather(i).Adaptability(picture));
+//        printf("%lld\n", (test.GetFather(i))->Adaptability(picture));
 //    }
-    
+//    printf("\n");
+//    long long *fitness = test.GetFitness();
+//    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+//        printf("%lld\n", fitness[i]);
+//    }
 //    printf("%d\n", sizeof(test));
+    
+//    int count[30] = {0};
+//    printf("%lld\n", (long long) (RAND_MAX) + 30);
+//    for (int i = 0; i < 10000000; i++) {
+//        count[Random((long long) RAND_MAX, (long long) RAND_MAX + 30) - (long long) RAND_MAX]++;
+//    }
+//    for (int i = 0; i < 30; i++) {
+//        printf("%lf\n", count[i] / 10000000.0);
+//    }
+//    //test on Ranom
+    Individuals *test = new Individuals(picture);
+    Individuals *tmp;
+//    test->PrintIndividual();
+//    //test.PrintIndividual();
+//    tmp = test->Evolve();
+//    test->~Individuals();
+//    tmp->PrintIndividual();
+//    test->GetFather(0)->OutPut(output);
+    //test = test.Evolve();
+    for (int i = 0; i < 50; i++) {
+        tmp = test->Evolve();
+        test->~Individuals();
+        test = tmp;
+    }
+    test->GetFather(0)->OutPut(output);
+    
+    
     
 
     if (!ListToFile("output.txt", output))
@@ -360,10 +399,22 @@ Individual::Individual()
     }
 }
 
+Individual::Individual(Individual const &i)
+{
+    for (int j = 0; j < NUMBER_OF_GENES; j++) {
+        genes_[j] = i.genes_[j];//initialize genes_
+    }
+}
+
 Status Individual::SetGene(int i, RandomTriangle rt)
 {
     genes_[i] = rt;
     return OK;
+}
+
+RandomTriangle *Individual::GetGenes()
+{
+    return genes_;
 }
 
 Status Individual::OverLay()
@@ -422,12 +473,12 @@ Status Individual::Mutate()
     return OK;
 }
 
-long Individual::Adaptability(int list[WIDTH][HEIGHT][3])
+long long Individual::Adaptability(int list[WIDTH][HEIGHT][3])
 {
-    //OverLay();
     if (fitness_ < 0) {
-        long sum = 0;
-        long r, g, b;
+        OverLay();
+        long long sum = 0;
+        long long r, g, b;
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {
                 r = list[x][y][0] - picture_[x][y][0];
@@ -459,71 +510,142 @@ Individual operator^(Individual i1, Individual i2)
     return new_individual;
 }
 
-Individuals::Individuals(){}
+bool operator>=(Individual i1, Individual i2)
+{
+    return i1.fitness_ >= i2.fitness_;
+}
+
+bool operator<=(Individual i1, Individual i2)
+{
+    return i1.fitness_ <= i2.fitness_;
+}
+
+Individuals::Individuals()
+{
+    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+        fathers[i] = new Individual();
+    }
+    Sort();
+}
 
 Individuals::Individuals(int list[WIDTH][HEIGHT][3])
 {
+    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+        fathers[i] = new Individual();
+    }
     for (int x = 0; x < WIDTH; x++) {
         for (int y = 0; y < HEIGHT; y++) {
-            target_[x][y][0] = list[x][y][0];
-            target_[x][y][1] = list[x][y][1];
-            target_[x][y][2] = list[x][y][2];
+            for (int i = 0; i < 3; i++) {
+                target_[x][y][i] = list[x][y][i];
+            }
         }
     }
-    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
-        father_[i] = Individual();
-        father_[i].OverLay();
-        //fitness_[i] = individuals[i].Adaptability(list);
-    }
+    Sort();
 }
 
-Individuals::Individuals(Individual ancestors[NUMBER_OF_INDIVIDUALS], int list[WIDTH][HEIGHT][3])
+Individuals::Individuals(Individual *ancestors[NUMBER_OF_INDIVIDUALS], int list[WIDTH][HEIGHT][3])
 {
+    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+        fathers[i] = ancestors[i];
+    }
     for (int x = 0; x < WIDTH; x++) {
         for (int y = 0; y < HEIGHT; y++) {
-            target_[x][y][0] = list[x][y][0];
-            target_[x][y][1] = list[x][y][1];
-            target_[x][y][2] = list[x][y][2];
+            for (int i = 0; i < 3; i++) {
+                target_[x][y][i] = list[x][y][i];
+            }
         }
     }
+    Sort();
+}
+
+Individuals::~Individuals()
+{
     for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
-        father_[i] = ancestors[i];
-        father_[i].OverLay();
-        //fitness_[i] = individuals[i].Adaptability(list);
+        //printf("delete\n");
+        delete fathers[i];
+        //delete children[i];
     }
 }
 
-Individual Individuals::GetFather(int i)
+Individual *Individuals::GetFather(int i)
 {
-    return father_[i];
+    return fathers[i];
 }
 
-Individual Individuals::GetChild(int i)
+long long *Individuals::GetFitness()
 {
-    return child_[i];
+    return add_up_fitness_;
 }
 
-Status Individuals::QuickSort(int head, int tail)
+Status Individuals::PrintIndividual()
 {
-    if (head >= tail)
-        return OK;
-    int i = head, j = tail;
-    Individual tmp = father_[head];
-    int pivot = father_[head].Adaptability(target_);
-    while (i < j) {
-        while (i < j and father_[j].Adaptability(target_) >= pivot) j--;
-        father_[i] = father_[j];
-        while (i < j and father_[i].Adaptability(target_) <= pivot) i++;
-        father_[j] = father_[i];
+    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+        printf("the %d individual's fittness %lld\n", i + 1, fathers[i]->Adaptability(target_));
+        //fathers[i]->PrintGenes();
     }
-    father_[i] = tmp;
-    
-    QuickSort(head, i - 1);
-    QuickSort(j + 1, tail);
     return OK;
 }
 
-long SumOfSquare(long a, long b, long c)
+Status Individuals::Sort()
+{
+    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+        for (int j = i; j < NUMBER_OF_INDIVIDUALS; j++) {
+            if (*fathers[j] >= *fathers[i]) {
+                Individual *tmp = fathers[j];
+                fathers[j] = fathers[i];
+                fathers[i] = tmp;
+            }
+        }
+    }
+    add_up_fitness_[0] = fathers[0]->Adaptability(target_);
+    for (int i = 1; i < NUMBER_OF_INDIVIDUALS; i++) {
+        add_up_fitness_[i] += add_up_fitness_[i - 1] + fathers[i]->Adaptability(target_);
+    }
+    return OK;
+}
+
+Individual *Individuals::Roulette()
+{
+    long long random_number = Random(0, add_up_fitness_[NUMBER_OF_INDIVIDUALS - 1]);
+    int choice = 0;
+    while (add_up_fitness_[choice] < random_number) {
+        choice++;
+    }
+    return fathers[choice];
+}
+
+Individuals *Individuals::Evolve()
+{
+    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+        children[i] = new Individual(*Roulette() ^ *Roulette());
+        children[i]->Mutate();
+    }
+    return new Individuals(children, target_);
+}
+int RandomN(int N)
+{// N must be smaller than RAND_MAX
+    int i;
+    while (true) {
+        i = rand();
+        if (i < RAND_MAX / N * N) {
+            break;
+        }
+    }
+    return 1 + i % N;
+}
+
+long long Random(long long low, long long high)
+{
+    if (high - low < RAND_MAX) {
+        return low + rand() % (high - low);
+    }
+    else
+    {
+        return (high - low) / RAND_MAX * rand() + low;
+    }
+}
+
+long long SumOfSquare(long long a, long long b, long long c)
 {
     return a * a + b * b + c * c;
 }
