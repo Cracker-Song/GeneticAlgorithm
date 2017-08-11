@@ -9,15 +9,17 @@
 #ifndef Header_h
 #define Header_h
 
+using namespace std;
+
 #define HEIGHT 200
 #define WIDTH 150
 #define COLOR_MAX 255
 #define NUMBER_OF_GENES 50
-#define NUMBER_OF_INDIVIDUALS 10
+#define NUMBER_OF_INDIVIDUALS 20
 #define OK 1
 #define ERROR 0
 #define MUTATION_RATE 1
-#define MAX_GENERATION 10000
+#define MAX_GENERATION 1
 
 //#define SUM_OF_SQUARE(a, b, c) (a * a + b * b + c * c)
 
@@ -96,6 +98,43 @@ Status ListToFile(char file_name[], int list[WIDTH][HEIGHT][3])
     }
     fclose(fp);
     return count;
+}
+
+
+
+
+
+
+
+class LinkedChar
+{
+public:
+    LinkedChar();
+protected:
+    char p;
+    char *next;
+};
+LinkedChar::LinkedChar()
+{
+    p = 0;
+    next = NULL;
+}
+
+class String
+{
+public:
+    String();
+    String(string str);
+    ~String();
+    friend String operator+(String str1, String str2);
+protected:
+    LinkedChar *head, *tail;
+};
+
+String::String()
+{
+    head = new LinkedChar();
+    tail = head;
 }
 
 

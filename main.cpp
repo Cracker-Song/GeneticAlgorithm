@@ -10,7 +10,6 @@
 
 #include "Header.h"
 
-using namespace std;
 
 class Individual
 {
@@ -31,13 +30,13 @@ protected:
     long long fitness_ = -1;
 };
 
-class Individuals
+class Generation
 {
 public:
-    //Individuals();
-    ~Individuals();
-    Individuals(int list[WIDTH][HEIGHT][3]);
-    //Individuals(Individual *ancestors[NUMBER_OF_INDIVIDUALS], int list[WIDTH][HEIGHT][3]);
+    //Generation();
+    ~Generation();
+    Generation(int list[WIDTH][HEIGHT][3]);
+    //Generation(Individual *ancestors[NUMBER_OF_INDIVIDUALS], int list[WIDTH][HEIGHT][3]);
     Individual *GetFather(int i);
     long long *GetFitness();
     Status PrintIndividual();
@@ -117,7 +116,7 @@ int main(int argc, const char * argv[]) {
     //printf("%d\n", i1 > i1);
 //    //test on class Individual
     
-//    Individuals test = Individuals();
+//    Generation test = Generation();
 //    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
 //        printf("%lld\n", (test.GetFather(i))->Adaptability(picture));
 //    }
@@ -142,7 +141,7 @@ int main(int argc, const char * argv[]) {
 //        printf("%lf\n", count[i] / 10000000.0);
 //    }
 //    //test on Random
-    Individuals *test = new Individuals(picture);
+    Generation *test = new Generation(picture);
 //    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
 //        printf("%lld\n", (test->GetFather(i))->Adaptability(picture));
 //    }
@@ -158,14 +157,12 @@ int main(int argc, const char * argv[]) {
 //        printf("%lld\n", fitness[i]);
 //    }
 //    //test on Sort
-    if (!ListToFile("first.txt", output))
-        return ERROR;
     for (int i = 0; i < MAX_GENERATION; i++) {
         printf("%d   %lld\n", i, test->GetFather(0)->Adaptability(picture));
         test->Evolve();
     }
     test->GetFather(0)->OutPut(output);
-    //test->~Individuals();
+    //test->~Generation();
     
     
 
@@ -299,7 +296,7 @@ Individual operator^(Individual i1, Individual i2)
     return new_individual;
 }
 
-//Individuals::Individuals()
+//Generation::Generation()
 //{
 //    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
 //        individuals[i] = new Individual();
@@ -307,7 +304,7 @@ Individual operator^(Individual i1, Individual i2)
 //    }
 //}
 
-Individuals::Individuals(int list[WIDTH][HEIGHT][3])
+Generation::Generation(int list[WIDTH][HEIGHT][3])
 {
 
     for (int x = 0; x < WIDTH; x++) {
@@ -324,7 +321,7 @@ Individuals::Individuals(int list[WIDTH][HEIGHT][3])
     Sort();
 }
 
-//Individuals::Individuals(Individual *ancestors[NUMBER_OF_INDIVIDUALS], int list[WIDTH][HEIGHT][3])
+//Generation::Generation(Individual *ancestors[NUMBER_OF_INDIVIDUALS], int list[WIDTH][HEIGHT][3])
 //{
 //    for (int x = 0; x < WIDTH; x++) {
 //        for (int y = 0; y < HEIGHT; y++) {
@@ -340,7 +337,7 @@ Individuals::Individuals(int list[WIDTH][HEIGHT][3])
 //    Sort();
 //}
 
-Individuals::~Individuals()
+Generation::~Generation()
 {
     for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
         //printf("delete\n");
@@ -348,17 +345,17 @@ Individuals::~Individuals()
     }
 }
 
-Individual *Individuals::GetFather(int i)
+Individual *Generation::GetFather(int i)
 {
     return individuals[i];
 }
 
-long long *Individuals::GetFitness()
+long long *Generation::GetFitness()
 {
     return add_up_fitness_;
 }
 
-Status Individuals::PrintIndividual()
+Status Generation::PrintIndividual()
 {
     for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
         printf("the %d individual's fittness %lld\n", i + 1, individuals[i]->Adaptability(target_));
@@ -367,7 +364,7 @@ Status Individuals::PrintIndividual()
     return OK;
 }
 
-Status Individuals::Sort()
+Status Generation::Sort()
 {
     for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
         for (int j = i; j < NUMBER_OF_INDIVIDUALS; j++) {
@@ -385,7 +382,7 @@ Status Individuals::Sort()
     return OK;
 }
 
-Individual *Individuals::Roulette()
+Individual *Generation::Roulette()
 {
     long long random_number = Random(0, add_up_fitness_[NUMBER_OF_INDIVIDUALS - 1]);
     int choice = 0;
@@ -395,7 +392,7 @@ Individual *Individuals::Roulette()
     return individuals[choice];
 }
 
-Status Individuals::Evolve()
+Status Generation::Evolve()
 {
     for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
         if (i == 0) {
