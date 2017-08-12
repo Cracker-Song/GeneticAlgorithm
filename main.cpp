@@ -414,7 +414,7 @@ Status Generation::Evolve()
     }
     for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
         if (i == 0) {
-            continue;
+            continue;//keep the optimal solution alive
         }
         *individuals[i] = *Roulette() ^ *Roulette();
         individuals[i]->Mutate();

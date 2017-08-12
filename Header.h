@@ -9,8 +9,8 @@
 #ifndef Header_h
 #define Header_h
 
-#define HEIGHT 50
-#define WIDTH 55
+#define WIDTH 50
+#define HEIGHT 55
 #define COLOR_MAX 255
 #define NUMBER_OF_GENES 50
 #define NUMBER_OF_INDIVIDUALS 20
