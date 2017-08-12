@@ -9,25 +9,19 @@
 #ifndef Header_h
 #define Header_h
 
-using namespace std;
-
-#define HEIGHT 200
-#define WIDTH 150
+#define HEIGHT 50
+#define WIDTH 55
 #define COLOR_MAX 255
 #define NUMBER_OF_GENES 50
 #define NUMBER_OF_INDIVIDUALS 20
 #define OK 1
 #define ERROR 0
 #define MUTATION_RATE 1
-#define MAX_GENERATION 1
+#define MAX_GENERATION 10000
 
 //#define SUM_OF_SQUARE(a, b, c) (a * a + b * b + c * c)
 
 typedef int Status;
-
-
-
-
 
 
 
@@ -70,7 +64,7 @@ Status FileToList(char file_name[], int list[WIDTH][HEIGHT][3])
     //int tmp[WIDTH][HEIGHT][3] = {0};
     FILE *fp = fopen(file_name, "r");
     int count = 0;
-    if (fp == NULL) {
+    if (fp == nullptr) {
         printf("file not exist\n");
         return ERROR;
     }
@@ -87,7 +81,7 @@ Status ListToFile(char file_name[], int list[WIDTH][HEIGHT][3])
     //int tmp[WIDTH][HEIGHT][3] = {0};
     FILE *fp = fopen(file_name, "w+");
     int count = 0;
-    if (fp == NULL) {
+    if (fp == nullptr) {
         printf("file not exist\n");
         return ERROR;
     }
@@ -106,37 +100,37 @@ Status ListToFile(char file_name[], int list[WIDTH][HEIGHT][3])
 
 
 
-class LinkedChar
-{
-public:
-    LinkedChar();
-protected:
-    char p;
-    char *next;
-};
-LinkedChar::LinkedChar()
-{
-    p = 0;
-    next = NULL;
-}
-
-class String
-{
-public:
-    String();
-    String(string str);
-    ~String();
-    friend String operator+(String str1, String str2);
-protected:
-    LinkedChar *head, *tail;
-};
-
-String::String()
-{
-    head = new LinkedChar();
-    tail = head;
-}
-
+//class LinkedChar
+//{
+//public:
+//    LinkedChar();
+//protected:
+//    char p;
+//    char *next;
+//};
+//LinkedChar::LinkedChar()
+//{
+//    p = 0;
+//    next = nullptr;
+//}
+//
+//class String
+//{
+//public:
+//    String();
+//    String(string str);
+//    ~String();
+//    friend String operator+(String str1, String str2);
+//protected:
+//    LinkedChar *head, *tail;
+//};
+//
+//String::String()
+//{
+//    head = new LinkedChar();
+//    tail = head;
+//}
+//
 
 
 

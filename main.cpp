@@ -10,7 +10,6 @@
 
 #include "Header.h"
 
-
 class Individual
 {
 public:
@@ -24,6 +23,7 @@ public:
     Status Mutate();//mutation
     long long Adaptability(int list[WIDTH][HEIGHT][3]);
     friend Individual operator^(Individual i1, Individual i2);//crossover
+    Individual operator=(Individual right);
 protected:
     RandomTriangle genes_[NUMBER_OF_GENES];
     int picture_[WIDTH][HEIGHT][3];
@@ -45,19 +45,19 @@ public:
     Individual *Roulette();
     Status Evolve();
 protected:
-    Individual *individuals[NUMBER_OF_INDIVIDUALS] = {NULL};
-    Individual *tmp[NUMBER_OF_INDIVIDUALS] = {NULL};
+    Individual *individuals[NUMBER_OF_INDIVIDUALS] = {nullptr};
+    Individual *tmp[NUMBER_OF_INDIVIDUALS] = {nullptr};
     long long add_up_fitness_[NUMBER_OF_INDIVIDUALS] = {0};
     int target_[WIDTH][HEIGHT][3] = {0};
 };
 
 int main(int argc, const char * argv[]) {
     
-    srand((unsigned)time(NULL));
+    srand((unsigned)time(nullptr));
     
     int picture[WIDTH][HEIGHT][3] = {0};
     int output[WIDTH][HEIGHT][3] = {0};
-    if (!FileToList("test.txt", picture))
+    if (!FileToList("target.txt", picture))
         return ERROR;
 //    for (int x = 0; x < WIDTH; x++) {
 //        for (int y = 0; y < HEIGHT; y++) {
@@ -296,6 +296,21 @@ Individual operator^(Individual i1, Individual i2)
     return new_individual;
 }
 
+Individual Individual::operator=(Individual right)
+{
+    for (int i = 0; i < NUMBER_OF_GENES; i++) {
+        genes_[i] = right.genes_[i];
+    };
+    for (int x= 0; x < WIDTH; x++) {
+        for (int y = 0; y < HEIGHT; y++) {
+            for (int i = 0; i < 3; i++) {
+                picture_[x][y][i] = 0;
+            }
+        }
+    }
+    fitness_ = -1;
+    return right;
+}
 //Generation::Generation()
 //{
 //    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
@@ -395,13 +410,14 @@ Individual *Generation::Roulette()
 Status Generation::Evolve()
 {
     for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+        tmp[i] = individuals[i];
+    }
+    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
         if (i == 0) {
             continue;
         }
-        tmp[i] = individuals[i];
-        individuals[i] = new Individual(*Roulette() ^ *Roulette());
+        *individuals[i] = *Roulette() ^ *Roulette();
         individuals[i]->Mutate();
-        tmp[i]->~Individual();
     }
     Sort();
     return OK;;
