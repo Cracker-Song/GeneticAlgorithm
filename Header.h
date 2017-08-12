@@ -13,10 +13,11 @@
 #define HEIGHT 55
 #define COLOR_MAX 255
 #define NUMBER_OF_GENES 50
-#define NUMBER_OF_INDIVIDUALS 20
+#define NUMBER_OF_INDIVIDUALS 25
 #define OK 1
 #define ERROR 0
-#define MUTATION_RATE 1
+#define MUTATION_RATE_GENES 3
+#define MUTATION_RATE_INDIVIDUALS 10
 #define MAX_GENERATION 10000
 
 //#define SUM_OF_SQUARE(a, b, c) (a * a + b * b + c * c)
@@ -30,18 +31,6 @@ long long Random(long long low, long long high);
 long long SumOfSquare(long long a, long long b, long long c);
 Status FileToList(char file_name[], int list[WIDTH][HEIGHT][3]);
 Status ListToFile(char file_name[], int list[WIDTH][HEIGHT][3]);
-
-int RandomN(int N)
-{// N must be smaller than RAND_MAX
-    int i;
-    while (true) {
-        i = rand();
-        if (i < RAND_MAX / N * N) {
-            break;
-        }
-    }
-    return 1 + i % N;
-}
 
 long long Random(long long low, long long high)
 {

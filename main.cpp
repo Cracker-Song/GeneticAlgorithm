@@ -7,6 +7,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+//#include <math.h>
 
 #include "Header.h"
 
@@ -50,6 +51,19 @@ protected:
     long long add_up_fitness_[NUMBER_OF_INDIVIDUALS] = {0};
     int target_[WIDTH][HEIGHT][3] = {0};
 };
+
+
+//int roll(long long add_up_fitness_[NUMBER_OF_INDIVIDUALS])
+//{
+//    long long random_number = Random(1, add_up_fitness_[NUMBER_OF_INDIVIDUALS - 1]);
+//    int choice = 0;
+//    while (add_up_fitness_[choice] < random_number) {
+//        choice++;
+//    }
+//    return choice;
+//}
+//test on Roulette function
+
 
 int main(int argc, const char * argv[]) {
     
@@ -140,8 +154,8 @@ int main(int argc, const char * argv[]) {
 //    for (int i = 0; i < 30; i++) {
 //        printf("%lf\n", count[i] / 10000000.0);
 //    }
-//    //test on Random
-    Generation *test = new Generation(picture);
+    //test on Random
+//    Generation *test = new Generation(picture);
 //    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
 //        printf("%lld\n", (test->GetFather(i))->Adaptability(picture));
 //    }
@@ -157,12 +171,47 @@ int main(int argc, const char * argv[]) {
 //        printf("%lld\n", fitness[i]);
 //    }
 //    //test on Sort
+    
+//    long long add_up = 10000000000;
+//    long long test[NUMBER_OF_INDIVIDUALS] = {0};
+//    int count[NUMBER_OF_INDIVIDUALS] = {0};
+//    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+//        if (i == 0) {
+//            test[i] = add_up * (i + 1);
+//        }
+//        else
+//        {
+//            test[i] = add_up * (i + 1) + test[i - 1];
+//        }
+//        
+//    }
+//    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+//        printf("%lld\n", test[i] / add_up);
+//    }
+//    printf("\n");
+//    for (int i = 0; i < 1000000; i++) {
+//        count[roll(test)]++;
+//    }
+//    for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
+//        if (i == 0) {
+//            printf("%lld\n", count[i] / (test[i] / add_up));
+//        }
+//        else
+//        {
+//            printf("%lld\n", count[i] / ((test[i] - test[i - 1]) / add_up));
+//        }
+//    }
+    //test on Roulette function
+    
+    
+    
+    Generation *test = new Generation(picture);
     for (int i = 0; i < MAX_GENERATION; i++) {
         printf("%d   %lld\n", i, test->GetFather(0)->Adaptability(picture));
         test->Evolve();
     }
     test->GetFather(0)->OutPut(output);
-    //test->~Generation();
+    
     
     
 
@@ -251,9 +300,10 @@ Status Individual::PrintGenes()
 
 Status Individual::Mutate()
 {
-    for (int i = 0; i < MUTATION_RATE; i++) {
-        int tmp = rand() % NUMBER_OF_GENES;
-        genes_[tmp] = RandomTriangle();
+    for (int i = 0; i < NUMBER_OF_GENES; i++) {
+        if (Random(1, 100) < MUTATION_RATE_GENES) {
+            genes_[i] = RandomTriangle();
+        }
     }
     return OK;
 }
@@ -273,6 +323,8 @@ long long Individual::Adaptability(int list[WIDTH][HEIGHT][3])
             }
         }
         fitness_ = (WIDTH * HEIGHT * SumOfSquare(COLOR_MAX, COLOR_MAX, COLOR_MAX) - sum);
+        fitness_ = ((double) (fitness_ * fitness_ * fitness_)) / ((WIDTH * HEIGHT * SumOfSquare(COLOR_MAX, COLOR_MAX, COLOR_MAX)));
+        // make those who fit better have a greater chance to be chosen
         //printf("fitness %lld\n", fitness_);
     }
     //printf("%lf\n", sum);
@@ -399,7 +451,7 @@ Status Generation::Sort()
 
 Individual *Generation::Roulette()
 {
-    long long random_number = Random(0, add_up_fitness_[NUMBER_OF_INDIVIDUALS - 1]);
+    long long random_number = Random(1, add_up_fitness_[NUMBER_OF_INDIVIDUALS - 1]);
     int choice = 0;
     while (add_up_fitness_[choice] < random_number) {
         choice++;
@@ -413,11 +465,13 @@ Status Generation::Evolve()
         tmp[i] = individuals[i];
     }
     for (int i = 0; i < NUMBER_OF_INDIVIDUALS; i++) {
-        if (i == 0) {
-            continue;//keep the optimal solution alive
-        }
+//        if (i == 0) {
+//            continue;//keep the optimal solution alive
+//        }
         *individuals[i] = *Roulette() ^ *Roulette();
-        individuals[i]->Mutate();
+        if (Random(1, 100) < MUTATION_RATE_INDIVIDUALS) {
+            individuals[i]->Mutate();
+        }
     }
     Sort();
     return OK;;
